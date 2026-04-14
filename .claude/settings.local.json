@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /Users/minseop/Dev/projects/soma_lecture/ai_special_course/.env*)",
+      "Bash(wc:*)",
+      "Bash(python3)",
+      "Bash(python3:*)",
+      "Bash(awk 'NR>=600 && NR<=612 {print NR\": \"$0}' notebooks/04_basic_rag_demo.ipynb)",
+      "Bash(awk 'NR==608' notebooks/04_basic_rag_demo.ipynb)",
+      "Bash(awk NR>=605 && NR<=608:*)",
+      "Read(//private/tmp/nbextract/**)",
+      "Bash(python -c 'import json; json.load\\(open\\('\\\\''__TRACKED_VAR__'\\\\''\\)\\)')",
+      "Bash(python:*)"
+    ]
+  }
+}

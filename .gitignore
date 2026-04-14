@@ -1,0 +1,33 @@
+# 환경 변수 (API 키 포함)
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# venv
+venv/
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# outputs (산출물은 재생성 가능)
+outputs/*.png
+outputs/*.jpg
+outputs/*.pdf

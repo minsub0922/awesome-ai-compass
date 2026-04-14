@@ -1,0 +1,64 @@
+# AI 특강 실습 - 필수 패키지 목록
+# 설치: pip install -r requirements.txt
+
+# ============================================================
+# 공통 (모든 노트북)
+# ============================================================
+numpy>=1.24.0
+pandas>=2.0.0
+python-dotenv>=1.0.0    # .env 파일에서 API 키 로드
+
+# ============================================================
+# 01: LLM as Interface
+# ============================================================
+openai>=1.30.0          # API 모드 - optional (없어도 mock 동작)
+
+# ============================================================
+# 02: Multimodal Demo
+# ============================================================
+# openai (위에서 포함)
+Pillow>=10.0.0          # 이미지 처리 (Colab 기본 포함)
+requests>=2.31.0        # HTTP 요청 (Colab 기본 포함)
+
+# ============================================================
+# 03-05: Embeddings, Vector Search, Better RAG
+# ============================================================
+sentence-transformers>=2.6.0   # 로컬 임베딩 (all-MiniLM-L6-v2)
+rank-bm25>=0.2.2               # BM25 키워드 검색
+# scikit-learn (Colab 기본 포함)
+
+# ============================================================
+# 06: Agentic Search / Tool Use
+# ============================================================
+# openai (위에서 포함)
+# sentence-transformers (위에서 포함)
+
+# ============================================================
+# 07: GraphRAG Concept Demo
+# ============================================================
+networkx>=3.1           # 그래프 처리 (Colab 기본 포함)
+matplotlib>=3.7.0       # 그래프 시각화 (Colab 기본 포함)
+
+# ============================================================
+# Colab 기본 포함 (별도 설치 불필요)
+# ============================================================
+# python>=3.10
+# torch
+# transformers
+# IPython
+# jupyter
+# matplotlib
+# scikit-learn
+# scipy
+
+# ============================================================
+# 노트북별 설치 명령어 (Colab 첫 번째 셀)
+# ============================================================
+# 00: !pip install -q openai sentence-transformers rank-bm25 networkx
+# 01: !pip install -q openai
+# 02: !pip install -q openai Pillow
+# 03: !pip install -q sentence-transformers rank-bm25 openai
+# 04: !pip install -q openai sentence-transformers
+# 05: !pip install -q sentence-transformers rank-bm25 openai
+# 06: !pip install -q openai sentence-transformers rank-bm25
+# 07: !pip install -q networkx sentence-transformers openai
