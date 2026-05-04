@@ -21,7 +21,9 @@ ai_special_course/
     ├── 04_basic_rag_demo.ipynb
     ├── 05_better_rag_hybrid_and_rerank.ipynb
     ├── 06_agentic_search_or_tool_use.ipynb
-    └── 07_graphrag_concept_demo.ipynb
+    ├── 07_cag_vs_rag_small_corpus_demo.ipynb
+    ├── 07_graphrag_concept_demo.ipynb
+    └── 08_llm_wiki_compilation_demo.ipynb
 ```
 
 ---
@@ -59,6 +61,15 @@ ai_special_course/
 | 05 | Retrieval quality가 전부다 | 하이브리드로 coverage 향상 |
 | 06 | 도구 반복 사용 = Agentic | 복잡한 질문 → 다단계 해결 |
 | 07 | 관계 중요한 문제 = 구조화 필요 | 영향 체인 추적 시연 |
+
+---
+
+## 🧪 확장 예제 노트북
+
+| 노트북 | 핵심 메시지 | 드라마틱한 포인트 |
+|--------|------------|-----------------|
+| 07_cag_vs_rag_small_corpus_demo | 작은 고정 코퍼스는 retrieval 없이 통째로 넣는 접근도 실전 옵션이다 | top-k miss vs 전체 코퍼스 completeness 비교 |
+| 08_llm_wiki_compilation_demo | LLM은 답변 생성뿐 아니라 2차 지식자산 생성에도 유용하다 | 흩어진 운영 문서 → 위키 초안 자동 컴파일 |
 
 ---
 

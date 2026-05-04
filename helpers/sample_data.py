@@ -1,7 +1,7 @@
 """
 sample_data.py - 강의 실습용 샘플 데이터 통합 모듈
 
-AI 특강 실습 노트북 00~07에서 사용하는 샘플 데이터를 한 곳에 모아 둡니다.
+AI 특강 실습 노트북 00~08 및 확장 예제에서 사용하는 샘플 데이터를 한 곳에 모아 둡니다.
 각 노트북에서는 `from helpers.sample_data import <이름>` 형식으로 import 합니다.
 
 노트북별 섹션:
@@ -12,7 +12,9 @@ AI 특강 실습 노트북 00~07에서 사용하는 샘플 데이터를 한 곳�
   04: SAMPLE_DOCS_MINI_04 / MOCK_LLM_ONLY / MOCK_RAG_RESPONSE
   05: SAMPLE_DOCS_05 / TEST_CASES_05
   06: RELEASE_NOTES / POLICIES / SAMPLE_DOCS_06 / MOCK_AGENTIC_ANSWER_1
-  07: ENTITIES / RELATIONS
+  07_cag_vs_rag_small_corpus_demo: SMALL_CORPUS_07
+  07_graphrag_concept_demo: ENTITIES / RELATIONS
+  08_llm_wiki_compilation_demo: WIKI_SOURCE_DOCS_08 / MOCK_COMPILED_WIKI_08
 
 참고:
   - helpers/demo_data.py 의 full-text SAMPLE_DOCS 도 여기서 재노출 합니다.
@@ -485,7 +487,7 @@ TEST_TEXTS_03 = [
     "시크릿 키 저장 및 보안 정책",           # 보안 관련 (유사)
     "CloudSync 파일 동기화 속도 개선",       # 제품 관련
     "재택근무 장비 지원 신청 절차",          # HR 관련
-    "점심 메뉴 추천해주세요",               # 완전 무관
+    # "점심 메뉴 추천해주세요",               # 완전 무관
 ]
 # ========================================================================
 # 04_basic_rag_demo
@@ -743,3 +745,303 @@ RELATIONS = [
 # networkx 그래프 구성
 # ──────────────────────────────────────────────────
 
+# ========================================================================
+# 07_cag_vs_rag_small_corpus_demo
+# ========================================================================
+SMALL_CORPUS_07 = [
+    {
+        "doc_id": "GPU-POLICY-001",
+        "title": "GPU 클러스터 사용 정책",
+        "category": "인프라정책",
+        "status": "current",
+        "content": """AI팀 GPU 클러스터(A100 × 32) 사용 정책.
+사용자 쿼터: 기본 4 GPU / 최대 8 GPU (팀장 승인).
+예약 방식: Kubernetes job 제출. 24시간 초과 job은 팀장 사전 승인 필수.
+우선순위: 프로덕션 inference > 실험 > 개인 학습 순.
+30분 이상 idle GPU는 자동 회수됨.
+월 GPU 사용 비용은 팀 예산에서 차감. 초과 시 팀장 알림 발송.""",
+    },
+    {
+        "doc_id": "DEPLOY-GATE-002",
+        "title": "AI 모델 프로덕션 배포 절차",
+        "category": "배포정책",
+        "status": "current",
+        "content": """AI 모델 프로덕션 배포 단계별 절차.
+1단계: 스테이징 배포 후 offline 지표 검증 (AUC 기준 ±0.5% 이내).
+2단계: 코드 리뷰 및 팀장 PR 승인 (최소 2 approvals).
+3단계: canary 1% → 10% → 100% 점진적 트래픽 이동.
+4단계: p99 latency ≤ 1초, 에러율 ≤ 1% 확인 후 전체 롤아웃.
+에러율 5% 초과 시 이전 버전으로 즉시 롤백.
+배포 완료 후 Slack #ai-deployments에 공지.""",
+    },
+    {
+        "doc_id": "DATA-PRIVACY-003",
+        "title": "학습 데이터 및 개인정보(PII) 처리 지침",
+        "category": "데이터정책",
+        "status": "current",
+        "content": """AI 모델 학습·추론 시 개인정보(PII) 처리 의무 사항.
+학습 데이터: 이름·전화번호·이메일·주소 등 개인 식별 정보는 마스킹 후 사용.
+사용자 쿼리 로그: 30일 후 자동 삭제. 분석 목적 보관 시 데이터팀 승인 필요.
+신규 외부 데이터셋: 법무팀의 저작권·개인정보 검토 후 사용 가능.
+프로덕션 배포 전 데이터팀 서명(체크리스트 항목) 필수.
+위반 시: 데이터팀 즉시 보고 → 72시간 내 개인정보 보호위원회 신고 의무.""",
+    },
+    {
+        "doc_id": "COST-MONITOR-004",
+        "title": "AI API 비용 모니터링 및 예산 관리 정책",
+        "category": "비용정책",
+        "status": "current",
+        "content": """외부 AI API (OpenAI, Anthropic, Google) 비용 관리 정책.
+팀 월 예산: $3,000. 75% 도달 시 팀장 자동 알림.
+100% 도달 시: 신규 API 호출 차단, 팀장 긴급 승인 후 재개.
+모델 선택 원칙: gpt-4o-mini 우선 → gpt-4o는 정확도 critical 케이스에만.
+프로덕션 배포 전: 예상 월간 inference 비용을 재무팀에 사전 승인 받아야 함.
+비용 최적화 필수: 프롬프트 캐싱, batch API 우선 사용.""",
+    },
+    {
+        "doc_id": "INCIDENT-RESP-005",
+        "title": "AI 서비스 장애 대응 runbook",
+        "category": "장애대응",
+        "status": "current",
+        "content": """AI 모델 서비스 장애 감지 및 대응 절차.
+자동 감지: 에러율 5% 초과 또는 p99 latency > 3초 시 PagerDuty 알림.
+즉시 조치: feature flag로 AI 기능 비활성화 → rule-based fallback 전환.
+원인 파악: 모델 롤백 또는 API provider 전환 (OpenAI → Anthropic).
+커뮤니케이션: Slack #ai-incidents 공유, 영향 고객사에 상태 페이지 업데이트.
+복구 후: 48시간 내 포스트모템 작성, 팀 공유 의무.""",
+    },
+    {
+        "doc_id": "ONBOARD-ML-006",
+        "title": "신규 ML 엔지니어 온보딩 체크리스트",
+        "category": "온보딩",
+        "status": "current",
+        "content": """ML 엔지니어 첫 2주 온보딩 필수 체크리스트.
+1일차: 노트북 수령, GitHub/Slack/Jira 계정 활성화, 보안 교육 2시간 수료.
+2~3일차: 코드베이스 투어 (기술 리드 페어 세션), 로컬 개발 환경 구성.
+4~5일차: 데이터 접근 권한 신청 (데이터팀 승인, SLA 2 영업일).
+2주차: 첫 PR 제출 (Good First Issue 해결), 팀 스탠드업 참여.
+온보딩 완료 후: 기술 리드 확인 서명 → GPU 클러스터 접근 권한 발급.
+⚠️ 온보딩 완료 전에는 GPU 클러스터 접근 불가.""",
+    },
+    {
+        "doc_id": "ARCHIVE-GPU-OLD-007",
+        "title": "구버전 GPU 사용 가이드 (2022, 비효력)",
+        "category": "아카이브",
+        "status": "archived",
+        "content": """[구버전/비효력 - 2022년 V100 환경 기준]
+당시 V100 × 8 환경 기준으로 작성됨. 현재 A100 클러스터 도입 이전 내용.
+당시 쿼터: 기본 2 GPU / 최대 4 GPU.
+예약 방식: 인프라팀에 이메일 요청 (현재 방식과 완전히 다름).
+이 문서는 비효력입니다. 현재 기준은 GPU-POLICY-001을 참조.""",
+    },
+]
+
+# ========================================================================
+# 08_llm_wiki_compilation_demo
+# ========================================================================
+WIKI_SOURCE_DOCS_08 = [
+    {
+        "doc_id": "PAPER-COT-001",
+        "title": "Chain-of-Thought Prompting 논문 요약",
+        "source_type": "학술논문",
+        "date": "2023-01-15",
+        "status": "current",
+        "content": """Wei et al. (2022, NeurIPS) Chain-of-Thought Prompting 연구 요약.
+핵심 발견: 중간 추론 단계(chain of thought)를 예시에 포함하면 수학·논리·상식 추론 벤치마크에서 성능이 크게 향상된다.
+주요 결과: GSM8K(초등 수학)에서 GPT-3 few-shot 대비 +46%p 향상. PaLM 540B에서 특히 두드러짐.
+Emergent behavior: 100B 파라미터 이상 대형 모델에서만 안정적으로 나타남. 소형 모델에서는 효과가 미미하거나 역효과.
+Zero-shot CoT: "Let's think step by step" 한 문장으로도 추론 성능 향상 가능 (Kojima et al., 2022).
+한계: 잘못된 추론 체인도 자신감 있게 생성하는 hallucination 위험. 추론 과정이 틀리면 답도 틀림.""",
+        "highlights": [
+            "중간 추론 단계 포함 시 수학·논리 벤치마크 최대 +46%p 향상",
+            "100B 파라미터 이상 대형 모델에서 emergent behavior로 나타남",
+            '"Let\'s think step by step" 한 문장으로 zero-shot CoT 가능',
+            "잘못된 추론 체인 → hallucination 위험",
+        ],
+    },
+    {
+        "doc_id": "DOCS-OPENAI-PROMPT-002",
+        "title": "OpenAI 프롬프트 엔지니어링 공식 가이드 (2024)",
+        "source_type": "공식문서",
+        "date": "2024-06-10",
+        "status": "current",
+        "content": """OpenAI 공식 프롬프트 엔지니어링 가이드 (2024년 6월 업데이트).
+핵심 전략 6가지:
+1. 명확하고 구체적인 지시: 모호한 표현 대신 원하는 것을 정확히 기술.
+2. 참조 텍스트 제공: 모델이 참고할 컨텍스트를 프롬프트에 포함.
+3. 복잡한 작업 분할: 하나의 긴 프롬프트보다 단계별로 나누기.
+4. 생각할 시간 주기: 답변 전 추론 과정을 거치도록 유도.
+5. 외부 도구 활용: 검색, 코드 실행 등 모델 한계를 도구로 보완.
+6. 체계적 평가: 다양한 프롬프트를 테스트하여 성능 측정.
+Temperature: 창의적 작업 0.7-1.0, 사실 기반 작업 0.0-0.3 권장.
+System prompt: 모델의 역할과 행동 방침을 설정하는 핵심 도구.""",
+        "highlights": [
+            "명확한 지시 / 참조 텍스트 / 작업 분할 / 추론 유도 / 도구 활용 / 체계적 평가",
+            "Temperature: 창의적 작업 0.7-1.0, 사실 기반 작업 0.0-0.3",
+            "System prompt로 모델 역할·행동 방침 설정",
+            "복잡한 작업은 단계별 분할 후 순차 처리",
+        ],
+    },
+    {
+        "doc_id": "BLOG-ANTHROPIC-PROMPT-003",
+        "title": "Anthropic 실전 프롬프트 엔지니어링 블로그",
+        "source_type": "엔지니어링블로그",
+        "date": "2024-09-01",
+        "status": "current",
+        "content": """Anthropic 엔지니어링 블로그: 실전 프롬프트 경험 정리.
+XML 태그 활용: <instructions>, <examples>, <output> 등 구조적 태그로 프롬프트 가독성과 성능 동시 향상.
+Few-shot 예시 품질: 10개의 평범한 예시보다 3개의 고품질 예시가 효과적.
+출력 형식 명시: JSON, Markdown, 리스트 등 원하는 포맷을 정확히 지정해야 할루시네이션 감소.
+프롬프트 재사용: 잘 작동하는 프롬프트는 템플릿화하여 팀 공유.
+Negative examples 주의: "하지 말 것"보다 "이렇게 해야 함"이 더 효과적. 부정 지시는 역효과 가능성.""",
+        "highlights": [
+            "XML 태그로 프롬프트 구조화 → 성능·가독성 향상",
+            "3개의 고품질 few-shot 예시 > 10개의 평범한 예시",
+            "출력 형식(JSON, Markdown 등) 명시 → 할루시네이션 감소",
+            '"하지 말 것"보다 "이렇게 해야 함" 표현이 더 효과적',
+        ],
+    },
+    {
+        "doc_id": "FAQ-COMMUNITY-PROMPT-004",
+        "title": "프롬프트 엔지니어링 커뮤니티 FAQ",
+        "source_type": "커뮤니티FAQ",
+        "date": "2024-10-15",
+        "status": "current",
+        "content": """커뮤니티 FAQ: 가장 많이 묻는 프롬프트 엔지니어링 질문.
+Q: 프롬프트가 길수록 좋은가?
+A: 아니다. 관련성 높은 컨텍스트가 핵심. 불필요한 정보는 오히려 성능 저하('lost in the middle' 현상).
+Q: "당신은 전문가입니다" 같은 역할 지정이 효과적인가?
+A: GPT-4 등 대형 모델에서는 어느 정도 효과 있음. 하지만 구체적인 지시와 예시가 더 중요.
+Q: 할루시네이션을 어떻게 줄이나?
+A: RAG로 사실 근거 제공, 모른다고 말하도록 명시, 출처 인용 요구, temperature 낮추기.
+Q: CoT와 일반 프롬프트를 언제 나눠 쓰나?
+A: 계산·논리·다단계 추론 → CoT. 감정 분류·창의적 생성 → 일반 프롬프트.""",
+        "highlights": [
+            "긴 프롬프트 ≠ 좋은 프롬프트: 'lost in the middle' 현상 주의",
+            "역할 지정은 보조 효과, 구체적 지시·예시가 핵심",
+            "할루시네이션 감소: RAG + 모른다고 허용 + 출처 인용 요구",
+            "CoT는 계산·논리·다단계 추론에 효과적, 감정 분류에는 불필요",
+        ],
+    },
+    {
+        "doc_id": "BENCH-PROMPT-005",
+        "title": "프롬프트 기법별 벤치마크 비교 (2024 Q3)",
+        "source_type": "벤치마크",
+        "date": "2024-08-20",
+        "status": "current",
+        "content": """내부 벤치마크: GPT-4o 기준 주요 프롬프트 기법 성능 비교 (2024 Q3).
+테스트 과제: 수학 추론(MATH), 코드 생성(HumanEval), 사실 QA(TriviaQA), 요약(XSum).
+결과 (기본 프롬프트 대비 향상률):
+- Chain-of-Thought: 수학 +23%, 코드 +12%, QA +4%, 요약 +1%
+- Few-shot (3-shot): 수학 +8%, 코드 +15%, QA +11%, 요약 +6%
+- CoT + Self-Consistency (5 samples): 수학 +31%, 코드 +14%, 요약 -2%
+- XML 구조화: 코드 +9%, 요약 +8%, QA +3%, 수학 +2%
+결론: 수학·논리는 CoT+Self-Consistency, 코드는 Few-shot, 요약은 XML 구조화가 최적.
+Self-Consistency 비용: 동일 프롬프트 5회 실행 → 비용 5배. 개방형 태스크에는 비효율.""",
+        "highlights": [
+            "수학·논리: CoT+Self-Consistency 최적 (+31%)",
+            "코드 생성: Few-shot 최적 (+15%)",
+            "요약: XML 구조화 최적 (+8%), Self-Consistency는 역효과",
+            "Self-Consistency = 비용 5배, 개방형 태스크엔 비효율",
+        ],
+    },
+    {
+        "doc_id": "ARCHIVE-PROMPT-GPT3-006",
+        "title": "GPT-3 시대 프롬프트 작성법 (2022 구가이드)",
+        "source_type": "아카이브",
+        "date": "2022-06-01",
+        "status": "archived",
+        "content": """[구버전 가이드 - GPT-3/GPT-3.5 시대 기준, 현재 일부 내용 outdated]
+GPT-3 최적 프롬프트 작성법 (2022년 기준).
+토큰 절약이 중요: GPT-3는 비쌌기 때문에 짧은 프롬프트가 미덕. 시스템 프롬프트 최소화.
+In-context learning 핵심: 모델이 instruction을 잘 따르지 않아 예시를 많이 넣는 것이 중요 (10-20개).
+Temperature 1.0이 기본값으로 사용됨.
+InstructGPT 이전: 역할 지정("You are a helpful assistant")이 매우 중요했음.
+주의: GPT-4, Claude 등 최신 instruction-tuned 모델은 이 가이드의 많은 내용이 적용되지 않음.""",
+        "highlights": [
+            "[구버전] 토큰 절약 목적 짧은 프롬프트 → 현재는 명확한 컨텍스트가 우선",
+            "[구버전] 예시 10-20개 권장 → 현재는 고품질 3-5개가 효과적",
+            "[구버전] Temperature 1.0 기본 → 현재 태스크별 조정 권장",
+            "[구버전] 역할 지정 매우 중요 → 현재는 구체적 지시가 더 효과적",
+        ],
+    },
+]
+
+# 점진적 업데이트 데모용 신규 소스 (4️⃣ 섹션에서 사용)
+WIKI_NEW_SOURCE_08 = {
+    "doc_id": "PAPER-SELF-REFINE-007",
+    "title": "Self-Refine: 반복적 자기 개선 프롬프팅 논문 요약",
+    "source_type": "학술논문",
+    "date": "2024-11-01",
+    "status": "current",
+    "content": """Madaan et al. (2023) Self-Refine: 모델이 자신의 출력을 반복 검토·개선하는 패턴.
+메커니즘: 1단계 초안 생성 → 2단계 자기 피드백 생성 → 3단계 피드백 반영 개선 → 반복 (보통 3-5회).
+성과: 코드 생성 +8%, 수학 추론 +10%, 요약 품질 +13% (인간 평가 기준).
+Chain-of-Thought와의 차이: CoT는 생성 시 추론 과정 포함, Self-Refine은 생성 후 검토·수정 반복.
+비용: 반복 횟수에 비례하여 증가. 3회 반복 시 비용 약 3-4배.
+적합한 태스크: 코드, 에세이, 창의적 글쓰기 등 반복 개선이 의미 있는 태스크.
+부적합한 태스크: 사실 QA (틀린 사실은 반복해도 고쳐지지 않음).""",
+    "highlights": [
+        "초안 → 자기 피드백 → 개선의 반복으로 품질 향상",
+        "CoT와 구분: CoT는 생성 중 추론, Self-Refine은 생성 후 검토·수정",
+        "코드·에세이·창의적 글쓰기에 특히 효과적 (+8~13%)",
+        "사실 QA에는 부적합 (잘못된 사실은 반복해도 수정 안 됨)",
+        "3회 반복 시 비용 약 3-4배",
+    ],
+}
+
+MOCK_COMPILED_WIKI_08 = """# 프롬프트 엔지니어링 위키
+
+## 1. 개요
+프롬프트 엔지니어링은 LLM(Large Language Model)로부터 원하는 출력을 얻기 위해 입력(프롬프트)을 설계·최적화하는 기술이다. 모델 재학습 없이 성능을 크게 향상시킬 수 있어 실용적 가치가 높다.
+[출처: DOCS-OPENAI-PROMPT-002, BLOG-ANTHROPIC-PROMPT-003]
+
+## 2. 주요 기법
+- **Chain-of-Thought (CoT)**: 중간 추론 단계를 예시에 포함. 수학·논리 벤치마크 최대 +46%p 향상. 100B+ 대형 모델에서 효과적.
+- **Zero-shot CoT**: "Let's think step by step" 한 문장으로 추론 유도. 별도 예시 불필요.
+- **Few-shot Prompting**: 고품질 예시 3-5개 제공. 코드 생성에 특히 효과적 (+15%).
+- **Self-Consistency**: 동일 프롬프트 여러 번 실행 후 다수결. 수학 추론 +31% (비용 5배).
+- **XML 구조화**: `<instructions>`, `<examples>` 등 태그로 프롬프트 구조화. 코드·요약 태스크에 효과적.
+[출처: PAPER-COT-001, BENCH-PROMPT-005, BLOG-ANTHROPIC-PROMPT-003]
+
+## 3. 실전 적용 가이드
+- 명확하고 구체적인 지시: 원하는 것을 정확히 기술
+- 출력 형식 명시: JSON, Markdown 등 원하는 포맷 지정 → 할루시네이션 감소
+- 관련성 높은 컨텍스트만 포함: 불필요한 정보는 'lost in the middle' 현상 유발
+- 복잡한 작업은 단계별 분할
+- 잘 작동하는 프롬프트는 템플릿화하여 재사용
+[출처: DOCS-OPENAI-PROMPT-002, BLOG-ANTHROPIC-PROMPT-003, FAQ-COMMUNITY-PROMPT-004]
+
+## 4. 기법별 성능 비교 (GPT-4o 기준)
+| 기법 | 수학 | 코드 | QA | 요약 | 비고 |
+|------|------|------|-----|------|------|
+| 기본 프롬프트 | 기준 | 기준 | 기준 | 기준 | |
+| Chain-of-Thought | +23% | +12% | +4% | +1% | |
+| Few-shot (3-shot) | +8% | +15% | +11% | +6% | |
+| CoT+Self-Consistency | +31% | +14% | - | -2% | 비용 5배 |
+| XML 구조화 | +2% | +9% | +3% | +8% | |
+[출처: BENCH-PROMPT-005]
+
+## 5. 흔한 실수 & 주의사항
+- 긴 프롬프트가 항상 좋은 것은 아님: 'lost in the middle' 현상
+- "하지 말 것" 표현은 역효과 가능: "이렇게 해야 함"으로 대체
+- 평범한 예시 10개 < 고품질 예시 3개
+- Self-Consistency는 개방형 태스크(요약, 창의적 글쓰기)에 비효율
+- 소형 모델에서 CoT는 효과 미미하거나 역효과
+[출처: BLOG-ANTHROPIC-PROMPT-003, FAQ-COMMUNITY-PROMPT-004, PAPER-COT-001]
+
+## 6. 구버전 가이드 주의
+아래 내용은 GPT-3 시대(2022년 이전) 가이드로 현재는 적용하면 안 됨:
+- 토큰 절약 목적의 짧은 프롬프트 (현재: 명확한 컨텍스트가 우선)
+- 예시 10-20개 권장 (현재: 고품질 3-5개)
+- Temperature 1.0 기본값 (현재: 태스크별 조정)
+[출처: ARCHIVE-PROMPT-GPT3-006]
+
+## 7. 참고 문서
+- PAPER-COT-001: Chain-of-Thought Prompting 논문 요약 (학술논문, 2023-01-15)
+- DOCS-OPENAI-PROMPT-002: OpenAI 프롬프트 엔지니어링 공식 가이드 (공식문서, 2024-06-10)
+- BLOG-ANTHROPIC-PROMPT-003: Anthropic 실전 블로그 (엔지니어링블로그, 2024-09-01)
+- FAQ-COMMUNITY-PROMPT-004: 커뮤니티 FAQ (커뮤니티FAQ, 2024-10-15)
+- BENCH-PROMPT-005: 기법별 벤치마크 비교 (벤치마크, 2024-08-20)
+- ARCHIVE-PROMPT-GPT3-006: GPT-3 시대 가이드 (아카이브, 2022-06-01, ⚠️ outdated)
+"""
